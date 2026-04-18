@@ -1,3 +1,10 @@
+ScoreDraw is a full-stack web application that combines performance tracking with a reward-based system. Users can sign up, manage their profiles, and enter their latest scores, which are stored and maintained using a rolling logic of the most recent entries. The platform includes a monthly draw mechanism where users are automatically entered based on their activity, creating an engaging and gamified experience.
+
+The application features a modern, responsive UI with a user dashboard for tracking participation, scores, and potential winnings. A basic admin interface is also included to manage users and execute draw operations. Core functionalities such as authentication and data handling are integrated with Supabase, while some features are currently implemented using mock data due to time constraints. The project is designed with scalability in mind and can be extended with payment integration, advanced analytics, and full charity modules in future iterations.
+
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
