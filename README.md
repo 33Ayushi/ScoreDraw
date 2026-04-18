@@ -3,7 +3,7 @@ ScoreDraw is a full-stack web application that combines performance tracking wit
 The application features a modern, responsive UI with a user dashboard for tracking participation, scores, and potential winnings. A basic admin interface is also included to manage users and execute draw operations. Core functionalities such as authentication and data handling are integrated with Supabase, while some features are currently implemented using mock data due to time constraints. The project is designed with scalability in mind and can be extended with payment integration, advanced analytics, and full charity modules in future iterations.
 
 
-Deployed Link : npx plugins add vercel/vercel-plugin
+Deployed Link : https://score-draw-puce.vercel.app/
 
 
 
