@@ -1,0 +1,40 @@
+.adminBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.adminBadge span:first-child {
+  -webkit-text-fill-color: initial;
+}
+
+.sidebarToggle {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 600;
+  background: var(--gradient-primary);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.875rem;
+  box-shadow: var(--shadow-lg);
+  border: none;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .sidebarToggle {
+    display: block;
+  }
+}

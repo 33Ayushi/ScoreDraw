@@ -1,0 +1,162 @@
+.hero {
+  padding: 4rem 2rem 2rem;
+  background: var(--gradient-hero);
+  position: relative;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-mesh);
+}
+
+.hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Pricing Cards */
+.pricingGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.pricingCard {
+  background: var(--gradient-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: var(--transition-base);
+  position: relative;
+}
+
+.pricingCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.pricingCardPopular {
+  border-color: rgba(245, 166, 35, 0.4);
+  box-shadow: var(--shadow-glow);
+}
+
+.popularBadge {
+  background: var(--gradient-primary);
+  color: #fff;
+  text-align: center;
+  padding: 8px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.pricingHeader {
+  padding: 2rem 2rem 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.pricingName {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.pricingPrice {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 900;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pricingPrice span {
+  font-size: 1rem;
+  font-weight: 500;
+  -webkit-text-fill-color: var(--text-tertiary);
+}
+
+.pricingDesc {
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+  margin-top: 0.25rem;
+}
+
+.pricingBody {
+  padding: 1.5rem 2rem 2rem;
+}
+
+.pricingFeatures {
+  margin-bottom: 1.5rem;
+}
+
+.pricingFeatures li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+}
+
+.featureCheck {
+  color: var(--success);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Breakdown */
+.breakdownGrid {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 3rem;
+}
+
+.breakdownItem {
+  text-align: center;
+}
+
+.breakdownBar {
+  width: 120px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.breakdownLabel {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.breakdownDesc {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+}
+
+@media (max-width: 768px) {
+  .pricingGrid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+
+  .breakdownGrid {
+    gap: 1.5rem;
+  }
+
+  .breakdownBar {
+    width: 80px;
+  }
+}
