@@ -13,6 +13,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('overview');
   const [scores, setScores] = useState([]);
+  const [charities, setCharities] = useState([]);
   const [newScore, setNewScore] = useState('');
   const [newScoreDate, setNewScoreDate] = useState('');
   const [editingScore, setEditingScore] = useState(null);
@@ -25,8 +26,14 @@ export default function DashboardPage() {
       router.push('/login');
     } else if (user) {
       fetchScores();
+      fetchCharities();
     }
   }, [user, authLoading, router]);
+
+  const fetchCharities = async () => {
+    const { data, error } = await supabase.from('charities').select('*');
+    if (!error) setCharities(data || []);
+  };
 
   const fetchScores = async () => {
     setFetchingScores(true);
@@ -54,7 +61,7 @@ export default function DashboardPage() {
     );
   }
 
-  const selectedCharity = mockCharities.find(c => c.id === user.charity_id?.toString()) || mockCharities[0];
+  const selectedCharity = charities.find(c => c.id === user.charity_id) || charities[0];
 
   // Score Management
   const addScore = async () => {
@@ -102,6 +109,24 @@ export default function DashboardPage() {
       setScores(scores.filter(s => s.id !== id));
       addToast('Score deleted', 'info');
     }
+  };
+
+  const [updatingCharity, setUpdatingCharity] = useState(false);
+
+  const updateCharity = async (charityId) => {
+    setUpdatingCharity(true);
+    const { error } = await supabase
+      .from('profiles')
+      .update({ charity_id: charityId })
+      .eq('id', user.id);
+
+    if (error) {
+      addToast('Error updating charity', 'error');
+    } else {
+      setUser({ ...user, charity_id: charityId });
+      addToast('Charity updated successfully! ❤️', 'success');
+    }
+    setUpdatingCharity(false);
   };
 
   const startEdit = (score) => {
@@ -410,61 +435,60 @@ export default function DashboardPage() {
             </div>
 
             <div className="grid-2">
-              <div className="card">
-                <h3 style={{ marginBottom: '1rem' }}>Selected Charity</h3>
+              <div className="card card-glow" style={{ borderColor: 'var(--primary-400)' }}>
+                <h3 style={{ marginBottom: '1.25rem' }}>Supporting Now</h3>
                 {selectedCharity && (
                   <>
-                    <div className={styles.charityDisplay}>
+                    <div className={styles.charityDisplay} style={{ marginBottom: '1rem' }}>
                       <div className={styles.charityIcon}>
-                        {selectedCharity.category === 'Youth Development' ? '👶' : '🎖️'}
+                        {selectedCharity.category === 'Youth Development' ? '👶' : 
+                         selectedCharity.category === 'Veterans Support' ? '🎖️' : '🤝'}
                       </div>
                       <div>
                         <h4>{selectedCharity.name}</h4>
-                        <span className="badge badge-accent">{selectedCharity.category}</span>
+                        <span className="badge badge-success">Active Choice</span>
                       </div>
                     </div>
-                    <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: '1.6', marginTop: '1rem' }}>
+                    <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
                       {selectedCharity.description}
                     </p>
+                    <div style={{ marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
+                      <p style={{ fontSize: '0.8125rem', color: 'var(--text-tertiary)' }}>
+                        You are donating <strong>{user.charity_percentage || 10}%</strong> of your subscription monthly.
+                      </p>
+                    </div>
                   </>
                 )}
               </div>
 
               <div className="card">
-                <h3 style={{ marginBottom: '1rem' }}>Contribution Summary</h3>
-                <div className={styles.contributionStats}>
-                  <div className={styles.contributionItem}>
-                    <span className={styles.contributionLabel}>Contribution Rate</span>
-                    <span className={styles.contributionValue}>{user.charity_percentage || 10}%</span>
-                  </div>
-                  <div className={styles.contributionItem}>
-                    <span className={styles.contributionLabel}>Monthly Contribution</span>
-                    <span className={styles.contributionValue}>
-                      ₹{user.subscriptions?.[0] ? (user.subscriptions[0].amount * (user.charity_percentage || 10) / 100).toFixed(0) : '0'}
-                    </span>
-                  </div>
-                  <div className={styles.contributionItem}>
-                    <span className={styles.contributionLabel}>Total Contributed</span>
-                    <span className={styles.contributionValue} style={{ color: 'var(--success)' }}>₹0</span>
-                  </div>
+                <h3 style={{ marginBottom: '1rem' }}>Change Your Impact</h3>
+                <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+                  Select another partner to focus your future contributions.
+                </p>
+                
+                <div className="flex flex-col gap-sm">
+                  {charities.filter(c => c.id !== user.charity_id).map((charity) => (
+                    <div key={charity.id} className={styles.charityOption} style={{ padding: '0.75rem', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div style={{ fontWeight: '500', fontSize: '0.9375rem' }}>{charity.name}</div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>{charity.category}</div>
+                        </div>
+                        <button 
+                          onClick={() => updateCharity(charity.id)} 
+                          className="btn btn-sm btn-ghost"
+                          disabled={updatingCharity}
+                          style={{ color: 'var(--primary-400)' }}
+                        >
+                          {updatingCharity ? '...' : 'Switch →'}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
-
-            {selectedCharity?.events?.length > 0 && (
-              <div className="card" style={{ marginTop: '1.5rem' }}>
-                <h3 style={{ marginBottom: '1rem' }}>Upcoming Charity Events</h3>
-                {selectedCharity.events.map((event, i) => (
-                  <div key={i} className={styles.eventItem}>
-                    <div>
-                      <div style={{ fontWeight: '600' }}>{event.title}</div>
-                      <div style={{ fontSize: '0.8125rem', color: 'var(--text-tertiary)' }}>{event.location}</div>
-                    </div>
-                    <span className="badge badge-info">{new Date(event.date).toLocaleDateString()}</span>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         )}
 

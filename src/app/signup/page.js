@@ -1,10 +1,10 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/AuthContext';
 import { useToast } from '@/components/Toast';
-import { mockCharities } from '@/lib/mockData';
+import { supabase } from '@/lib/supabase';
 import styles from './signup.module.css';
 
 export default function SignupPage() {
@@ -17,10 +17,19 @@ export default function SignupPage() {
     charity_id: '',
     charity_percentage: 10,
   });
+  const [charities, setCharities] = useState([]);
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const { addToast } = useToast();
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchCharities = async () => {
+      const { data } = await supabase.from('charities').select('*');
+      if (data) setCharities(data);
+    };
+    fetchCharities();
+  }, []);
 
   const updateField = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -47,7 +56,13 @@ export default function SignupPage() {
     }
     setLoading(true);
     try {
-      const { user, error } = await signUp(formData.email, formData.password, formData.name);
+      const { error } = await signUp(
+        formData.email, 
+        formData.password, 
+        formData.name,
+        formData.charity_id,
+        formData.charity_percentage
+      );
       if (error) {
         addToast(error.message, 'error');
       } else {
@@ -202,7 +217,7 @@ export default function SignupPage() {
             </div>
 
             <div className={styles.charityGrid}>
-              {mockCharities.map(charity => (
+              {charities.map(charity => (
                 <div
                   key={charity.id}
                   className={`${styles.charityOption} ${formData.charity_id === charity.id ? styles.charitySelected : ''}`}

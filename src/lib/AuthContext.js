@@ -55,12 +55,16 @@ export function AuthProvider({ children }) {
     return { user: data?.user, error };
   };
 
-  const signUp = async (email, password, name) => {
+  const signUp = async (email, password, name, charity_id, charity_percentage) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { name },
+        data: { 
+          name, 
+          charity_id, 
+          charity_percentage: parseInt(charity_percentage) || 10 
+        },
       },
     });
     return { user: data?.user, error };

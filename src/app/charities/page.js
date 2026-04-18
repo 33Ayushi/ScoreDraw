@@ -1,17 +1,36 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Footer from '@/components/Footer';
-import { mockCharities } from '@/lib/mockData';
+import { supabase } from '@/lib/supabase';
 import styles from './charities.module.css';
 
 export default function CharitiesPage() {
+  const [charities, setCharities] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
 
-  const categories = ['all', ...new Set(mockCharities.map(c => c.category))];
+  useEffect(() => {
+    fetchCharities();
+  }, []);
 
-  const filtered = mockCharities.filter(c => {
+  const fetchCharities = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('charities')
+      .select('*')
+      .order('featured', { ascending: false });
+
+    if (!error) {
+      setCharities(data || []);
+    }
+    setLoading(false);
+  };
+
+  const categories = ['all', ...new Set(charities.map(c => c.category))];
+
+  const filtered = charities.filter(c => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) ||
                        c.description.toLowerCase().includes(search.toLowerCase());
     const matchCategory = category === 'all' || c.category === category;
@@ -61,19 +80,18 @@ export default function CharitiesPage() {
           </div>
 
           {/* Featured Spotlight */}
-          {category === 'all' && !search && (
+          {category === 'all' && !search && charities.find(c => c.featured) && (
             <div className={styles.spotlight}>
               <div className={styles.spotlightBadge}>⭐ Featured Charity</div>
               <div className={styles.spotlightContent}>
-                <div className={styles.spotlightIcon}>🎖️</div>
+                <div className={styles.spotlightIcon}>
+                  {charities.find(c => c.featured).category === 'Youth Development' ? '👶' : '🎖️'}
+                </div>
                 <div className={styles.spotlightInfo}>
-                  <h2 className={styles.spotlightName}>{mockCharities[1].name}</h2>
-                  <p className={styles.spotlightDesc}>{mockCharities[1].description}</p>
+                  <h2 className={styles.spotlightName}>{charities.find(c => c.featured).name}</h2>
+                  <p className={styles.spotlightDesc}>{charities.find(c => c.featured).description}</p>
                   <div className="flex gap-md items-center" style={{ marginTop: '1rem' }}>
-                    <span className="badge badge-success">
-                      ₹{mockCharities[1].total_raised.toLocaleString()} raised
-                    </span>
-                    <span className="badge badge-accent">{mockCharities[1].category}</span>
+                    <span className="badge badge-accent">{charities.find(c => c.featured).category}</span>
                   </div>
                 </div>
               </div>
@@ -101,12 +119,7 @@ export default function CharitiesPage() {
                   <h3 className={styles.charityName}>{charity.name}</h3>
                   <p className={styles.charityDesc}>{charity.description}</p>
                   <div className={styles.charityFooter}>
-                    <span className={styles.charityRaised}>
-                      <span style={{ color: 'var(--success)' }}>₹{charity.total_raised.toLocaleString()}</span> raised
-                    </span>
-                    {charity.events?.length > 0 && (
-                      <span className="badge badge-info">{charity.events.length} events</span>
-                    )}
+                    <span className="badge badge-primary">Partner</span>
                   </div>
                   {charity.events?.length > 0 && (
                     <div className={styles.charityEvents}>
